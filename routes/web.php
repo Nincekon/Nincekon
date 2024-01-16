@@ -32,7 +32,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('posts', BlogController::class)
-        ->only(['index', 'store'])
+        ->only(['index', 'store', 'edit', 'update', 'destroy'])
         ->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {

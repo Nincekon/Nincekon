@@ -6,7 +6,6 @@ use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
@@ -58,25 +57,55 @@ class BlogController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param Post $post
+     *
+     * @return View
      */
-    public function edit(Post $post)
+    public function edit(Post $post) : View
     {
         //
+        $this->authorize('update', $post);
+
+        return view('posts.edit', ['post' => $post]);
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param PostRequest $request
+     * @param Post $post
+     *
+     * @return RedirectResponse
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post) : RedirectResponse
     {
         //
+        $this->authorize('update', $post);
+
+        $validated = $request->validated();
+
+        $validated["slug"] = Str::slug($request->title);
+
+        $post->update($validated);
+
+        return to_route('posts.index');
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param Post $post
+     *
+     * @return RedirectResponse
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post) : RedirectResponse
     {
         //
+        $this->authorize('delete', $post);
+
+        $post->delete();
+
+        return to_route('posts.index');
     }
 }
